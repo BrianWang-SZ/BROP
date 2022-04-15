@@ -32,9 +32,6 @@ def get_plt(size = 72, stop_addr = 0x400545, depth = 4):
                 p.close()
                 log.info("Bad connection!")
                 i -= 1
-        
-        log.info("PLT found!")
-        return probe
 
 plt_addr = get_plt()
 print("The plt entry address is 0x%x" % plt_addr)
